@@ -1,5 +1,5 @@
 {
-  "name": "ai-chatbot",
+  "name": "zina-ai",
   "version": "3.0.23",
   "private": true,
   "scripts": {
@@ -19,6 +19,7 @@
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.48",
     "@ai-sdk/react": "^1.2.11",
     "@ai-sdk/xai": "^1.2.15",
     "@codemirror/lang-javascript": "^6.2.2",
@@ -86,7 +87,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
-    "zod": "^3.23.8"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

@@ -3,7 +3,7 @@ import {
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
-import { xai } from '@ai-sdk/xai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { isTestEnvironment } from '../constants';
 import {
   artifactModel,
@@ -11,27 +11,32 @@ import {
   reasoningModel,
   titleModel,
 } from './models.test';
+import type { LanguageModel } from 'ai';
+
+// Ollama API compatible with OpenAI
+const ollama = createOpenAI({
+  baseURL: 'http://localhost:11434/v1',
+  apiKey: 'ollama',
+});
+
+const testProvider = customProvider({
+  languageModels: {
+    'chat-model': chatModel,
+    'chat-model-reasoning': reasoningModel,
+    'title-model': titleModel,
+    'artifact-model': artifactModel,
+  },
+});
+
+const productionModels: Record<string, LanguageModel> = {
+  'chat-model': ollama('Tutehau/zina') as any,
+  'chat-model-reasoning': ollama('Tutehau/zina') as any,
+  'title-model': ollama('Tutehau/zina') as any,
+  'artifact-model': ollama('Tutehau/zina') as any,
+};
 
 export const myProvider = isTestEnvironment
-  ? customProvider({
-      languageModels: {
-        'chat-model': chatModel,
-        'chat-model-reasoning': reasoningModel,
-        'title-model': titleModel,
-        'artifact-model': artifactModel,
-      },
-    })
-  : customProvider({
-      languageModels: {
-        'chat-model': xai('grok-2-vision-1212'),
-        'chat-model-reasoning': wrapLanguageModel({
-          model: xai('grok-3-mini-beta'),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
-        }),
-        'title-model': xai('grok-2-1212'),
-        'artifact-model': xai('grok-2-1212'),
-      },
-      imageModels: {
-        'small-model': xai.image('grok-2-image'),
-      },
-    });
+  ? testProvider
+  : (customProvider({
+      languageModels: productionModels,
+    }) as any);
